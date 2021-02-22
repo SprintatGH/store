@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+
+class PermisosSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        DB::table('permisos')->insert(array(
+            array(
+                'nombre'          => 'Crear',
+            ),
+            array(
+                'nombre'          => 'Modificar',
+            ),
+            array(
+                'nombre'          => 'Eliminar',
+            )
+        ));  
+    }
+}
