@@ -507,6 +507,27 @@ Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
     Route::get('/cliente/ventas/controlDespacho/{id}/{estado}/cambioEstado',  'ca\ventas\ControlDespachoController@cambio_estado' )->name('CA_control_despacho.cambio_estado')->middleware('auth'); 
 
  
+ 
+
+
+    //rutas: cliente / ventas / parametros / estado pago
+
+    Route::get('/cliente/ventas/parametros/estadoPago', 'ca\ventas\parametros\CA_EstadoPagoController@index')->middleware('auth');
+
+    Route::get('/cliente/ventas/parametros/DTestadoPago', 'ca\ventas\parametros\CA_EstadoPagoController@DTindex')->middleware('auth');
+
+    Route::get('/cliente/ventas/parametros/estadoPago/{id}/edit',  'ca\ventas\parametros\CA_EstadoPagoController@edit' )->name('CA_EstadoPago.edit')->middleware('auth'); 
+
+    Route::post('/cliente/ventas/parametros/estadoPago/store',  'ca\ventas\parametros\CA_EstadoPagoController@store' )->name('CA_EstadoPago.store')->middleware('auth'); 
+
+    Route::post('/cliente/ventas/parametros/estadoPago/update',  'ca\ventas\parametros\CA_EstadoPagoController@update' )->name('CA_EstadoPago.update')->middleware('auth'); 
+
+    Route::post('/cliente/ventas/parametros/estadoPago/contactos',  'ca\ventas\parametros\CA_EstadoPagoController@contactos' )->name('CA_EstadoPago.contactos')->middleware('auth'); 
+
+    Route::get('/cliente/ventas/parametros/estadoPago/{id}/{estado}/estado',  'ca\ventas\parametros\CA_EstadoPagoController@estado' )->name('CA_EstadoPago.estado')->middleware('auth');
+
+    
+       
 
  
 

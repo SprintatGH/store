@@ -16,6 +16,8 @@ use App\Modelos\ca\ventas\ControlDespachoDetalle;
 
 use App\Modelos\ca\ventas\ControlDespachoEstados;
 
+use App\Modelos\ca\ventas\parametros\CA_EstadoPago;
+
 use App\Modelos\ca\CA_Log;
 
 use App\Modelos\ca\administracion\CA_Clientes;
@@ -120,7 +122,7 @@ class ControlDespachoController extends Controller
 
         ->orderBy('ca_control_despacho.id', 'DESC')
 
-        ->get();
+        ->get(); 
 
 
         $clientes = CA_Clientes::where('empresa_id',session('id_empresa'))->where('estado',1)->where('sucursal_id',session('sucursal'))->get();
@@ -129,11 +131,13 @@ class ControlDespachoController extends Controller
 
         $destinatarios = desti::select()->where('empresa_id', session('id_empresa'))->where('estado',1)->get();
 
+        $estadosPago = CA_EstadoPago::where('estado',1)->where('sucursal_id', session('sucursal'))->get();
+
         $action="listado";
 
 
 
-        return view('cliente/ventas/controlDespacho/index', compact('contenido','action','clientes','estados', 'destinatarios'));
+        return view('cliente/ventas/controlDespacho/index', compact('contenido','action','clientes','estados', 'destinatarios', 'estadosPago'));
 
     }
 
@@ -153,6 +157,8 @@ class ControlDespachoController extends Controller
 
         ->join('ca_control_despacho_estados', 'ca_control_despacho_estados.id', '=', 'ca_control_despacho.estado_id')
 
+        ->leftjoin('ca_control_despacho_estados_pago','ca_control_despacho_estados_pago.id','ca_control_despacho.estado_pago_id')
+
         ->leftJoin('ca_control_despacho_detalle','ca_control_despacho_detalle.cotizacion_id', 'ca_control_despacho.id')
 
         ->select(   'ca_control_despacho.id as id',
@@ -168,6 +174,8 @@ class ControlDespachoController extends Controller
                     'ca_control_despacho.valor_despacho as valor_despacho',
 
                     'ca_control_despacho_estados.nombre as nombre_estado',
+
+                    DB::raw('IFNULL(ca_control_despacho_estados_pago.nombre, "Sin estado") as estadoPago'),
 
                     DB::raw('SUM(IFNULL(ca_control_despacho_detalle.precio,0) * IFNULL(ca_control_despacho_detalle.cantidad,0)) as total'),
 
@@ -553,6 +561,8 @@ class ControlDespachoController extends Controller
 
                     'ca_control_despacho.valor_despacho as valor_despacho',
 
+                    'ca_control_despacho.estado_pago_id',
+
                     'ca_control_despacho_estados.nombre as nombre_estado') 
 
         ->where('ca_control_despacho.empresa_id',session('id_empresa'))
@@ -634,6 +644,8 @@ class ControlDespachoController extends Controller
             $ca_venta_cot->descripcion = $request->descripcion;
 
             $ca_venta_cot->estado_id = $request->estado;
+
+            $ca_venta_cot->estado_pago_id = $request->estadoPago;
 
             $ca_venta_cot->valor_despacho = (is_null($request->valor_despacho)? 0 : $request->valor_despacho);
 
