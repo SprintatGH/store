@@ -76,7 +76,9 @@ class ControlDespachoController extends Controller
 
         ->join('ca_control_despacho_estados', 'ca_control_despacho_estados.id', '=', 'ca_control_despacho.estado_id')
 
-        ->leftJoin('ca_control_despacho_detalle','ca_control_despacho_detalle.cotizacion_id', 'ca_control_despacho.id')
+        ->leftjoin('ca_control_despacho_estados_pago','ca_control_despacho_estados_pago.id','ca_control_despacho.estado_pago_id')
+
+        ->leftJoin('ca_control_despacho_detalle','ca_control_despacho.id','ca_control_despacho_detalle.cotizacion_id')
 
         ->select(   'ca_control_despacho.id as id',
 
@@ -92,21 +94,19 @@ class ControlDespachoController extends Controller
 
                     'ca_control_despacho_estados.nombre as nombre_estado',
 
+                    DB::raw('IFNULL(ca_control_despacho_estados_pago.nombre, "Sin estado") as estadoPago'),
+
                     DB::raw('SUM(IFNULL(ca_control_despacho_detalle.precio,0) * IFNULL(ca_control_despacho_detalle.cantidad,0)) as total'),
 
-                    DB::raw('SUM(IFNULL(ca_control_despacho_detalle.cantidad,0)) as cantidad')) 
+                    DB::raw('SUM( IFNULL(ca_control_despacho_detalle.cantidad,0)) as cantidad')) 
 
         ->where('ca_control_despacho.empresa_id',session('id_empresa'))
 
         ->where('ca_control_despacho.sucursal_id',session('sucursal'))
 
-       // ->where('ca_control_despacho_estados.estado','<>',1)
-
         ->where('ca_control_despacho.estado','<>', ConstCliente::CONTROL_DESPACHO_ELIMINADO)
 
         ->where('ca_clientes.estado',1) 
-
-        ->where('ca_control_despacho_detalle.estado',0)
 
         ->groupBy('ca_control_despacho.id',
 
@@ -122,8 +122,43 @@ class ControlDespachoController extends Controller
 
         ->orderBy('ca_control_despacho.id', 'DESC')
 
-        ->get(); 
+        ->get();
 
+
+        $datos=[];
+        foreach ($contenido as $item)
+        {
+            $estadoPago = CA_EstadoPago::obtenerEstado($item->id);
+            $cantidad = ControlDespachoDetalle::obtenerCantidad($item->id) ;
+            $total = ControlDespachoDetalle::obtenerValorTotal($item->id);
+
+            $datosNuevos=[
+            'id' => $item->id,
+
+            'fecha' => $item->fecha,
+
+            'estado' => $item->estado,
+
+            'estadoDesp' => $item->estadoDesp,
+
+            'nombre_cliente' => $item->nombre_cliente,
+
+            'valor_despacho' => $item->valor_despacho,
+
+            'nombre_estado' => $item->nombre_estado,
+
+            'estadoPago' => $estadoPago,
+
+            'total' => '',
+
+            'cantidad' => '',
+
+            ];
+
+            array_push($datos, $datosNuevos);
+        }
+
+       
 
         $clientes = CA_Clientes::where('empresa_id',session('id_empresa'))->where('estado',1)->where('sucursal_id',session('sucursal'))->get();
 
@@ -159,7 +194,7 @@ class ControlDespachoController extends Controller
 
         ->leftjoin('ca_control_despacho_estados_pago','ca_control_despacho_estados_pago.id','ca_control_despacho.estado_pago_id')
 
-        ->leftJoin('ca_control_despacho_detalle','ca_control_despacho_detalle.cotizacion_id', 'ca_control_despacho.id')
+        ->leftJoin('ca_control_despacho_detalle','ca_control_despacho.id','ca_control_despacho_detalle.cotizacion_id')
 
         ->select(   'ca_control_despacho.id as id',
 
@@ -179,19 +214,15 @@ class ControlDespachoController extends Controller
 
                     DB::raw('SUM(IFNULL(ca_control_despacho_detalle.precio,0) * IFNULL(ca_control_despacho_detalle.cantidad,0)) as total'),
 
-                    DB::raw('SUM(IFNULL(ca_control_despacho_detalle.cantidad,0)) as cantidad')) 
+                    DB::raw('SUM( IFNULL(ca_control_despacho_detalle.cantidad,0)) as cantidad')) 
 
         ->where('ca_control_despacho.empresa_id',session('id_empresa'))
 
         ->where('ca_control_despacho.sucursal_id',session('sucursal'))
 
-       // ->where('ca_control_despacho_estados.estado','<>',1)
-
         ->where('ca_control_despacho.estado','<>', ConstCliente::CONTROL_DESPACHO_ELIMINADO)
 
         ->where('ca_clientes.estado',1) 
-
-        ->where('ca_control_despacho_detalle.estado',1)
 
         ->groupBy('ca_control_despacho.id',
 
@@ -211,9 +242,41 @@ class ControlDespachoController extends Controller
 
 
 
+        $datos=[];
+        foreach ($contenido as $item)
+        {
+            $estadoPago = CA_EstadoPago::obtenerEstado($item->id);
+            $cantidad = ControlDespachoDetalle::obtenerCantidad($item->id) ;
+            $total = ControlDespachoDetalle::obtenerValorTotal($item->id);
+
+            $datosNuevos=[
+            'id' => $item->id,
+
+            'fecha' => $item->fecha,
+
+            'estado' => $item->estado,
+
+            'estadoDesp' => $item->estadoDesp,
+
+            'nombre_cliente' => $item->nombre_cliente,
+
+            'valor_despacho' => $item->valor_despacho,
+
+            'nombre_estado' => $item->nombre_estado,
+
+            'estadoPago' => $estadoPago,
+
+            'total' => $total,
+
+            'cantidad' => $cantidad,
+
+            ];
+
+            array_push($datos, $datosNuevos);
+        }
 
 
-        $array_result = json_decode($contenido,true);
+        $array_result = json_decode(json_encode($datos),true);
 
 
 
@@ -362,6 +425,8 @@ class ControlDespachoController extends Controller
         $ca_venta_cot->valor_despacho = $request->valor_despacho;
 
         $ca_venta_cot->estado_id = $request->estado;
+
+        $ca_venta_cot->estado_pago_id  = $request->estadoPago;
 
         $ca_venta_cot->cliente_id = $request->cliente;
 

@@ -7,6 +7,8 @@ namespace App\Modelos\ca\ventas\parametros;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Modelos\ca\ventas\ControlDespacho;
+
 use DB;
 
 
@@ -38,6 +40,25 @@ class CA_EstadoPago extends Model
 
         return $contenido;
 
+    }
+
+    public static function obtenerEstado($id)
+    {
+
+        $contenido = ControlDespacho::
+        
+        leftjoin('ca_control_despacho_estados_pago','ca_control_despacho_estados_pago.id','ca_control_despacho.estado_pago_id')
+        ->select(DB::raw('IFNULL(ca_control_despacho_estados_pago.nombre, "Sin estado") as estadoPago'))
+        ->where('ca_control_despacho.id',$id)
+        ->where('ca_control_despacho_estados_pago.sucursal_id', session('sucursal'))
+        ->first();
+
+        if (is_null($contenido))
+        {
+            $data = 'Sin Estado';
+        } else { $data=$contenido->estadoPago; }
+
+        return $data;
     }
 
 }

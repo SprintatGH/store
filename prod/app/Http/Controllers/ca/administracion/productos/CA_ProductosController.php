@@ -121,8 +121,6 @@ class CA_ProductosController extends Controller
 
     { 
 
-     
-
         $contenido = CA_Productos:: 
 
         join('ca_productos_subcategoria','ca_productos_subcategoria.id','ca_productos.subcategoria_id')
@@ -141,7 +139,7 @@ class CA_ProductosController extends Controller
 
                     'ca_productos.stock_minimo',
 
-                    'ca_productos.stock_actual',
+                    'ca_productos.stock_actual', 
 
                     'ca_productos.precio_por_mayor',
 
@@ -168,8 +166,44 @@ class CA_ProductosController extends Controller
         ->get();
 
     
+        $data=[];
 
-        $array_result = json_decode($contenido,true);
+        foreach ($contenido as $item)
+        {
+            $stockFisico = CA_ProductosStock::stockActual($item->id);
+            $dataNueva=[
+                    
+                    'id'  =>  $item->id,
+
+                    'codigo'  =>  $item->codigo,
+
+                    'estado'  =>  $item->estado,
+
+                    'avatar'  =>  $item->avatar,
+
+                    'nombre'  =>  $item->nombre,
+
+                    'stock_minimo'  =>  $item->stock_minimo,
+
+                    'stock_actual'  =>  $item->stock_actual, 
+
+                    'precio_por_mayor'  =>  $item->precio_por_mayor,
+
+                    'precio_unitario'  =>  $item->precio_unitario,
+
+                    'nombre_subcategoria'  =>  $item->nombre_subcategoria,
+
+                    'nombre_categoria'  =>  $item->nombre_categoria,
+
+                    'formatoNombre'  =>  $item->formatoNombre,
+
+                    'stockFisico'  =>  $stockFisico
+            ];
+
+            array_push($data, $dataNueva);
+        }
+
+        $array_result = json_decode(json_encode($data),true);
 
 
 
