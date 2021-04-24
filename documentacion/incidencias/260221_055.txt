@@ -1,0 +1,20 @@
+proyeccion de ventas
+	* precio
+	* orden por codigo
+	* si el stock es negativo, proyeccion es 0
+
+listado de productos
+	* orden por codigo
+stock productos
+	* orden por codigo
+control de despacho
+	* descontar al eliminar
+	* historial de despacho
+	* permiso solo el flujo de venta
+	* estado de venta
+
+
+
+
+
+

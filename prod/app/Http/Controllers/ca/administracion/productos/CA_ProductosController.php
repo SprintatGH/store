@@ -44,7 +44,6 @@ class CA_ProductosController extends Controller
 
     { 
 
-
         $contenido = CA_Productos:: 
 
         join('ca_productos_subcategoria','ca_productos_subcategoria.id','ca_productos.subcategoria_id')
@@ -101,7 +100,7 @@ class CA_ProductosController extends Controller
 
 
 
-        $productoStock = CA_Productos::where('estado',1)->where('empresa_id', session('id_empresa'))->orderby('nombre')->get();
+        $productoStock = CA_Productos::where('estado',1)->where('sucursal_id', session('sucursal'))->orderby('nombre')->get();
 
         
 
