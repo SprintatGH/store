@@ -1,9 +1,17 @@
-<?php
-
-return [
-
-    'titulos' => [
-        'front_home'    =>  'Team Shopping'
-    ]
-
+<?php
+
+
+
+return [
+
+
+
+    'titulos' => [
+
+        'front_home'    =>  'Team Shopping'
+
+    ]
+
+
+
 ];

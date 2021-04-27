@@ -7,29 +7,18 @@ namespace App\Http\Controllers\ca\administracion\productos;
 
 
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Auth;
-
 use App\Modelos\ca\administracion\CA_Productos;
-
 use App\Modelos\ca\administracion\CA_ProductosCategoria;
-
 use App\Modelos\ca\administracion\CA_ProductosSubcategoria;
-
 use App\Modelos\ca\administracion\CA_ProductosStock;
-
 use App\User;
-
 use File;
-
 use PDF;
-
 use App\Modelos\ca\administracion\CA_ProductosFormato as Formatos;
-
 use App\Modelos\ad\modulos\administracion\productos\ProductoFormato;
-
 use App\Http\Controllers\Controller;
-
+use App\Constants\Administrador as ConstAdmin;
 
 
 class CA_ProductosController extends Controller
@@ -96,8 +85,9 @@ class CA_ProductosController extends Controller
 
 
 
-        $formatos = Formatos::where('estado',1)->where('sucursal_id', session('sucursal'))->get();
+        $formatos = Formatos::where('estado',1)->where('empresa_id',session('id_empresa'))->get();
 
+      
 
 
         $productoStock = CA_Productos::where('estado',1)->where('sucursal_id', session('sucursal'))->orderby('nombre')->get();
@@ -246,7 +236,7 @@ class CA_ProductosController extends Controller
 
             $file->move($destinationPath, $fileAvatar);
 
-            File::copy($destinationPath.$fileAvatar,'/home2/cst62160/public_html/pro/files/productos/'.$fileAvatar);
+            File::copy($destinationPath.$fileAvatar,ConstAdmin::http_base.'files/productos/'.$fileAvatar);
 
         } else {
 
