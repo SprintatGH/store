@@ -400,7 +400,7 @@ class CA_ProductosController extends Controller
 
             $file->move($destinationPath, $fileAvatar);
 
-            File::copy($destinationPath.$fileAvatar,'/home2/cst62160/public_html/pro/files/productos/'.$fileAvatar);
+            File::copy($destinationPath.$fileAvatar,ConstAdmin::http_base.'files/productos/'.$fileAvatar);
 
         } else {
 
