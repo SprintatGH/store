@@ -54,6 +54,8 @@ Route::get('/dashboardCliente', 'DashboardController@indexCliente')->middleware(
 
 Route::get('/dashboardAdminCliente', 'DashboardController@indexAdminCliente')->middleware('auth');  
 
+Route::get('/dashboardSucursal', 'DashboardController@indexSucursal')->middleware('auth');  
+
 Route::get('/dashboardDemo', 'DashboardController@indexDemo')->middleware('auth'); 
 
 
@@ -82,7 +84,7 @@ Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
 
   Route::post('/users/update',  'UsuarioController@update' )->name('users.update')->middleware('auth'); 
 
-  Route::get('/users/{id}/{estado}/estado',  'UsuarioController@estado' )->name('users.estado')->middleware('auth'); 
+  Route::get('/users/{id}/{estado}/estado',  'UsuarioController@estado' )->name('users.estado')->middleware('auth');  
 
 
 
@@ -371,7 +373,7 @@ Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
  
 
             
-
+ 
 
 
     //rutas: cliente / administracion / productos / Categorias

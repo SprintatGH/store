@@ -458,7 +458,7 @@ class CA_ProductosController extends Controller
 
         $ca_prod_stk->empresa_id = session('id_empresa');
 
-        $ca_prod_stk->user_create_id = Auth::user()->id;
+        $ca_prod_stk->user_create_id = Auth::user()->id; 
 
         $ca_prod_stk->estado = 1;
 
@@ -776,7 +776,7 @@ class CA_ProductosController extends Controller
 
 
 
-        $totalStock = CA_ProductosStock::dashboradTotalStock();//total stock - todos los productos
+        $totalStock = CA_ProductosStock::dashboradTotalStock();//total stock - todos los productos 
 
         $data = [                
 

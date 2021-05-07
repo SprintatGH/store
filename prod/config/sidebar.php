@@ -408,7 +408,7 @@ return [
 
 		'title' => 'Dashboard',
 
-		'url' => '/dashboardAdminCliente'
+		'url' => '/dashboardSucursal'
 
 	],[
 
@@ -595,7 +595,7 @@ return [
 
 		],[
 
-			'url' => '/cliente/administracion/productos/reporteProductosProyeccionVentas_pdf',
+			'url' => '/cliente/administracion/productos/reporteProductosProyeccionVentas_pdf', 
 
 			'title' => 'Proyecciones de Ventas'
 

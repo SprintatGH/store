@@ -362,6 +362,8 @@ class ControlDespachoController extends Controller
 
         $ca_venta_cot_det->save();
 
+        $id_detalle = ControlDespachoDetalle::latest('id')->first();
+
 
 
         $ca_venta_stock = new CA_ProductosStock;
@@ -377,6 +379,8 @@ class ControlDespachoController extends Controller
         $ca_venta_stock->user_create_id = Auth::user()->id;
 
         $ca_venta_stock->cantidad = $request->cantidad;
+
+        $ca_venta_stock->id_despacho_detalle = $id_detalle['id'];
 
         $ca_venta_stock->save();
 
@@ -578,11 +582,12 @@ class ControlDespachoController extends Controller
 
     {
 
+        //sacar producto
         $ca_venta_cot_det = ControlDespachoDetalle::where('id',$id)->where('empresa_id',session('id_empresa'))->first();
 
-      
-
         $cot_id = $ca_venta_cot_det->cotizacion_id;
+
+        $producto_id = $ca_venta_cot_det->producto_id;
 
         if ($ca_venta_cot_det){
 
@@ -592,7 +597,18 @@ class ControlDespachoController extends Controller
 
         }
 
-       
+
+        //sacar stock
+        $ca_venta_det = CA_ProductosStock::where('id_despacho_detalle',$id)->where('producto_id',$producto_id)->where('empresa_id',session('id_empresa'))->first();
+
+
+        if ($ca_venta_det){
+
+                $ca_venta_det->estado = $estado;
+
+                $ca_venta_det->save();
+
+        }
 
         return $this->detalle($cot_id);
 
