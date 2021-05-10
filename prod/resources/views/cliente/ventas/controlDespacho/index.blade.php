@@ -88,6 +88,8 @@
 
                                                     <th class="text-nowrap">Cliente</th>
 
+													<th class="text-nowrap">descuento</th>
+
 													<th class="text-nowrap">Cantidad</th>
 
                                                     <th class="text-nowrap" align="center">Total</th>
@@ -520,15 +522,30 @@
 
 									<div class="col-md-8 col-sm-8">
 
-										<select class="form-control" name="cliente" >
+										<select class="form-control" name="cliente" onchange="traerDatos(this)" >
+
+											<option value="0" selected> Seleccione un Cliente </option>
 
 											@foreach ($clientes as $items)
 
-												<option value="{{ $items->id }}"> {{$items->Nombre}} </option>
+												<option value="{{ $items->id }}"> {{$items->Nombre}} </option> 
 
 											@endforeach
 
 										</select>
+
+									</div>
+
+								</div>
+
+
+								<div class="form-group row m-b-15">
+
+									<label class="col-md-4 col-sm-4 col-form-label" for="descuento">Descuento :</label>
+
+									<div class="col-md-8 col-sm-8">
+
+										<input class="form-control" style="width : 80px;" type="text" id="descuento" name="descuento" disabled/>
 
 									</div>
 
@@ -541,8 +558,6 @@
 									<div class="col-md-8 col-sm-8">
 
                                         <textarea class="form-control" rows="3"  id="descripcion" name="descripcion"></textarea>
-
-										
 
 									</div>
 
@@ -579,8 +594,6 @@
 											<input type="radio" id="es_venta2" name="es_venta" class="custom-control-input" value="0">
 
 											<label class="custom-control-label" for="es_venta2">No</label>
-
-											
 
 										</div>
 
@@ -803,9 +816,7 @@ $.ajax({
 	dataType: 'json',
 
 	success: function(data){
-
-		console.log(data);
-
+console.log(data.data);
 		if (data.data.length > 0)
 
 		{
@@ -814,7 +825,7 @@ $.ajax({
 
 			 for (var i=0; i<data.data.length; i++){
 
-
+					
 
 					if (data.data[i].estado == data.CONTROL_DESPACHO_ABIERTO) {
 
@@ -858,12 +869,13 @@ $.ajax({
 
 					data.data[i].nombre_cliente,
 
+					data.data[i].descuento,
+
 					data.data[i].cantidad,
 
 					data.data[i].total,
 
 					estadoDespacho,
-
 
 					data.data[i].estadoPago,
 
@@ -943,6 +955,8 @@ $.ajax({
 
 					{title: "Cliente"},
 
+					{title: "Descuento"},
+
 					{title: "Cantidad"},
 
 					{title: "Total"},
@@ -1010,6 +1024,8 @@ $.ajax({
 					{title: "Fecha"},
 
 					{title: "Cliente"},
+
+					{title: "Descuento"},
 
 					{title: "Cantidad"},
 
@@ -1111,6 +1127,20 @@ $('#modal-add').on('hidden.bs.modal', function () {
 
 
 
+var traerDatos= function(id) 
+
+{
+
+    var route = "{{url('/cliente/ventas/cotizaciones')}}/"+id.value+"/descuento";
+
+
+    $.get(route, function(content){
+
+		$("#descuento").val(content.descuento) ; 
+
+    });
+
+}
 
 
 var editar= function(id) 
@@ -1119,11 +1149,9 @@ var editar= function(id)
 
     var route = "{{url('/cliente/ventas/controlDespacho')}}/"+id+"/edit";
 
-	console.log(route);
 
     $.get(route, function(content){
 
-		console.log(content);
 
 		$("#edit_id").val(content.id); 
 

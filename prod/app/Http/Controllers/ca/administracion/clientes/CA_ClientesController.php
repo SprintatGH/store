@@ -19,8 +19,7 @@ use App\Http\Controllers\Controller;
 use App\Modelos\ca\administracion\CA_Productos;
 
 use App\Modelos\ca\administracion\CA_PreciosEspeciales;
-
-
+use Hamcrest\Type\IsNumeric;
 
 class CA_ClientesController extends Controller
 
@@ -40,15 +39,11 @@ class CA_ClientesController extends Controller
 
         $productos = CA_Productos::where('empresa_id', session('id_empresa'))->where('estado',1)->get();
 
-
-
-        
-
         $action="listado";
 
 
 
-        return view('cliente/administracion/clientes/index', compact('contenido','action','cm_tipo_cliente','productos'));
+        return view('cliente/administracion/clientes/index', compact('contenido','action','cm_tipo_cliente','productos')); 
 
     }
 
@@ -60,7 +55,7 @@ class CA_ClientesController extends Controller
 
     {
 
-        $contenido = CA_Clientes::where('sucursal_id',session('sucursal'))->where('estado',1)->get();
+        $contenido = CA_Clientes::where('sucursal_id',session('sucursal'))->where('empresa_id', session('id_empresa'))->where('estado',1)->get();
 
         $dataArray = json_decode($contenido, true);
 
@@ -121,6 +116,11 @@ class CA_ClientesController extends Controller
         $fecha_termino = date('Y-m-d', strtotime($request->termino));
 
 
+        $numDescuento =0;
+
+        if (Is_Numeric($request->descuento) && !is_null($request->descuento)) {
+            $numDescuento = $request->descuento;
+        }
 
         $ca_cli->empresa_id = session('id_empresa');
 
@@ -142,6 +142,8 @@ class CA_ClientesController extends Controller
 
         $ca_cli->email = $request->email;
 
+        $ca_cli->descuento = $numDescuento;
+
         $ca_cli->save();
 
         
@@ -160,7 +162,8 @@ class CA_ClientesController extends Controller
 
     {
 
-         $ca_cli = CA_Clientes::where('id',$id)->where('empresa_id',session('id_empresa'))->first();
+
+         $ca_cli = CA_Clientes::where('id',$id)->where('sucursal_id', session('sucursal'))->where('empresa_id',session('id_empresa'))->first();
 
          return response()->json($ca_cli);
 
@@ -180,7 +183,11 @@ class CA_ClientesController extends Controller
 
         if ($ca_cli){
 
+            $numDescuento =0;
 
+            if (Is_Numeric($request->descuento) && !is_null($request->descuento)) {
+                $numDescuento = $request->descuento;
+            }
 
             $ca_cli->tipo_cliente_id = $request->tipo_cliente;
 
@@ -193,6 +200,8 @@ class CA_ClientesController extends Controller
             $ca_cli->telefono = $request->telefono;
 
             $ca_cli->email = $request->email;
+
+            $ca_cli->descuento = $numDescuento;
 
             $ca_cli->save();
 

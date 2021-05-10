@@ -492,7 +492,7 @@ class DashboardController extends Controller
             $listadoAlertaStock = CA_ProductosStock::listadoAlertaProductos();
 
             $productoStock = CA_ProductosStock::alertaProductos($contenido);
-
+ 
             $totalStock = CA_ProductosStock::dashboradTotalStock();//total stock - todos los productos
 
             $despachos = ControlDespacho::despachosAbiertos();

@@ -50,7 +50,7 @@ class CA_ProductosStock extends Model
 
                 ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
 
-                ->join('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
+                ->rightjoin('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
 
                 ->where('ca_productos_stock.producto_id', $id_producto)
 
@@ -64,17 +64,17 @@ class CA_ProductosStock extends Model
 
                 ->where('ca_productos_stock.estado',1)
 
-                ->where('ca_control_despacho_detalle.estado',1)
+                ->where('ca_control_despacho_detalle.estado',1)->orWhere('ca_productos_stock.id_despacho_detalle',0)
 
                 ->sum('ca_productos_stock.cantidad');
 
-        
+
 
         $menos = DB::table('ca_productos_stock')
 
         ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
 
-        ->join('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
+        ->leftjoin('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
 
         ->where('ca_productos_stock.producto_id', $id_producto)
 
@@ -88,7 +88,7 @@ class CA_ProductosStock extends Model
 
         ->where('ca_productos_stock.estado',1)
 
-        ->where('ca_control_despacho_detalle.estado',1)
+        ->Where('ca_productos_stock.id_despacho_detalle',0)
 
         ->sum('ca_productos_stock.cantidad');
 
@@ -226,7 +226,7 @@ class CA_ProductosStock extends Model
 
                 ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
 
-                ->join('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
+                ->leftjoin('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
 
                 ->where('ca_productos_stock.empresa_id',session('id_empresa'))
 
@@ -238,17 +238,17 @@ class CA_ProductosStock extends Model
 
                 ->where('ca_productos_stock.estado',1)
 
-                ->where('ca_control_despacho_detalle.estado',1)
-
+                ->where('ca_control_despacho_detalle.estado',1)->orWhere('ca_productos_stock.id_despacho_detalle',0)
+                
                 ->sum('ca_productos_stock.cantidad'); 
 
-        
+        //dd($mas);
 
         $menos = DB::table('ca_productos_stock')
 
         ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
 
-        ->join('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
+        ->leftjoin('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
 
         ->where('ca_productos_stock.empresa_id',session('id_empresa'))
 
@@ -260,14 +260,13 @@ class CA_ProductosStock extends Model
 
         ->where('ca_productos_stock.estado',1)
         
-        ->where('ca_control_despacho_detalle.estado',1)
+        ->Where('ca_productos_stock.id_despacho_detalle',0)
 
         ->sum('ca_productos_stock.cantidad');
 
      
 
         $data = $mas - $menos;
-
 
 
         return $data;
@@ -288,7 +287,7 @@ class CA_ProductosStock extends Model
 
          ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
 
-         ->join('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
+         ->leftjoin('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
 
          ->where('ca_productos_stock.empresa_id',session('id_empresa'))
 
@@ -302,7 +301,7 @@ class CA_ProductosStock extends Model
 
          ->where('ca_productos_stock.estado',1)
 
-         ->where('ca_control_despacho_detalle.estado',1)
+         ->where('ca_control_despacho_detalle.estado',1)->orWhere('ca_productos_stock.id_despacho_detalle',0)
 
          ->sum('ca_productos_stock.cantidad');
 
@@ -312,7 +311,7 @@ class CA_ProductosStock extends Model
 
          ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
 
-         ->join('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
+         ->leftjoin('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
 
          ->where('ca_productos_stock.empresa_id',session('id_empresa'))
 
@@ -326,7 +325,7 @@ class CA_ProductosStock extends Model
 
          ->where('ca_productos_stock.estado',1)
 
-         ->where('ca_control_despacho_detalle.estado',1)
+         ->Where('ca_productos_stock.id_despacho_detalle',0)
 
          ->sum('ca_productos_stock.cantidad');
 
@@ -341,10 +340,6 @@ class CA_ProductosStock extends Model
         } else {
             $total = $data * intval($precio->precio_unitario);
         }
-
-         
-
- 
 
          return $total;
 
@@ -368,7 +363,7 @@ class CA_ProductosStock extends Model
 
         ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
 
-        ->join('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
+        ->leftjoin('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
 
         ->where('ca_productos_stock.empresa_id',session('id_empresa'))
 
@@ -382,7 +377,7 @@ class CA_ProductosStock extends Model
 
         ->where('ca_productos_stock.estado',1)
 
-        ->where('ca_control_despacho_detalle.estado',1)
+        ->where('ca_control_despacho_detalle.estado',1)->orWhere('ca_productos_stock.id_despacho_detalle',0)
 
         ->sum('ca_productos_stock.cantidad');
 
@@ -392,7 +387,7 @@ class CA_ProductosStock extends Model
 
         ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
 
-        ->join('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
+        ->leftjoin('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
 
         ->where('ca_productos_stock.empresa_id',session('id_empresa'))
 
@@ -406,7 +401,7 @@ class CA_ProductosStock extends Model
 
         ->where('ca_productos_stock.estado',1)
 
-        ->where('ca_control_despacho_detalle.estado',1)
+        ->Where('ca_productos_stock.id_despacho_detalle',0)
 
         ->sum('ca_productos_stock.cantidad');
 
@@ -460,7 +455,7 @@ class CA_ProductosStock extends Model
 
             ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
 
-            ->join('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
+            ->leftjoin('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
 
             ->where('ca_productos_stock.empresa_id',session('id_empresa'))
 
@@ -474,7 +469,7 @@ class CA_ProductosStock extends Model
 
             ->where('ca_productos_stock.estado',1)
 
-            ->where('ca_control_despacho_detalle.estado',1)
+            ->where('ca_control_despacho_detalle.estado',1)->orWhere('ca_productos_stock.id_despacho_detalle',0)
 
             ->sum('ca_productos_stock.cantidad');
 
@@ -484,7 +479,7 @@ class CA_ProductosStock extends Model
 
             ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
 
-            ->join('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
+            ->leftjoin('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
 
             ->where('ca_productos_stock.empresa_id',session('id_empresa'))
 
@@ -498,7 +493,7 @@ class CA_ProductosStock extends Model
 
             ->where('ca_productos_stock.estado',1)
 
-            ->where('ca_control_despacho_detalle.estado',1)
+            ->Where('ca_productos_stock.id_despacho_detalle',0)
 
             ->sum('ca_productos_stock.cantidad');
 
@@ -548,7 +543,7 @@ class CA_ProductosStock extends Model
 
             ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
 
-            ->join('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
+            ->leftjoin('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
 
             ->where('ca_productos_stock.empresa_id',session('id_empresa'))
 
@@ -562,7 +557,7 @@ class CA_ProductosStock extends Model
 
             ->where('ca_productos_stock.estado',1)
 
-            ->where('ca_control_despacho_detalle.estado',1)
+            ->where('ca_control_despacho_detalle.estado',1)->orWhere('ca_productos_stock.id_despacho_detalle',0)
 
             ->sum('ca_productos_stock.cantidad');
 
@@ -572,7 +567,7 @@ class CA_ProductosStock extends Model
 
             ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
 
-            ->join('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
+            ->leftjoin('ca_control_despacho_detalle','ca_productos_stock.id_despacho_detalle','ca_control_despacho_detalle.id')
 
             ->where('ca_productos_stock.empresa_id',session('id_empresa'))
 
@@ -586,7 +581,7 @@ class CA_ProductosStock extends Model
 
             ->where('ca_productos_stock.estado',1)
 
-            ->where('ca_control_despacho_detalle.estado',1)
+            ->Where('ca_productos_stock.id_despacho_detalle',0)
 
             ->sum('ca_productos_stock.cantidad');
 
@@ -598,9 +593,6 @@ class CA_ProductosStock extends Model
             if ($data>0){
                 $totalPrecio = $totalPrecio + ($data * intval($items->precio_unitario));
             }
-            
-
-
 
         }
 

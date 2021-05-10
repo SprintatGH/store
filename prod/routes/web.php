@@ -320,7 +320,7 @@ Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
 
     //rutas: cliente / administracion / clientes
 
-    Route::get('/cliente/administracion/clientes', 'ca\administracion\clientes\CA_ClientesController@index')->middleware('auth');
+    Route::get('/cliente/administracion/clientes', 'ca\administracion\clientes\CA_ClientesController@index')->middleware('auth'); 
 
     Route::get('/cliente/administracion/DTclientes', 'ca\administracion\clientes\CA_ClientesController@DTindex')->middleware('auth');
 
@@ -481,6 +481,8 @@ Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
     Route::get('/cliente/ventas/controlDespacho/{id}/edit',  'ca\ventas\ControlDespachoController@edit' )->name('CA_control_despacho.edit')->middleware('auth'); 
 
     Route::get('/cliente/ventas/controlDespacho/{id}/precios',  'ca\ventas\ControlDespachoController@precios' )->name('CA_control_despacho.precios')->middleware('auth'); 
+
+    Route::get('/cliente/ventas/cotizaciones/{id}/descuento',  'ca\ventas\ControlDespachoController@descuento' )->name('CA_control_despacho.descuento')->middleware('auth'); 
 
     Route::post('/cliente/ventas/controlDespacho/store',  'ca\ventas\ControlDespachoController@store' )->name('CA_control_despacho.store')->middleware('auth'); 
 

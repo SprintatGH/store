@@ -221,7 +221,46 @@ class ControlDespachoDetalle extends Model
             $data=0;
         } else { $data=$contenido->total;  }
 
+       
+        $descuento = ControlDespacho::select('descuento')->where('id',$id)->where('sucursal_id', session('sucursal'))->where('empresa_id',session('id_empresa'))->first();
+
+        if (($descuento) && $descuento->descuento > 0 ){
+            $datadescuento = ($data * $descuento->descuento) / 100;
+             $data= $data - $datadescuento;
+        }
+        
         return $data;
+    }
+
+
+    public static function obtenerDescuento($id)
+    {
+        $contenido = ControlDespacho::
+        leftJoin('ca_control_despacho_detalle','ca_control_despacho.id','ca_control_despacho_detalle.cotizacion_id')
+        ->select(
+            DB::raw('SUM(IFNULL(ca_control_despacho_detalle.precio,0) * IFNULL(ca_control_despacho_detalle.cantidad,0)) as total')
+        )
+        ->where('ca_control_despacho.id', $id)
+
+        ->where('ca_control_despacho_detalle.estado',1)
+
+        ->groupBy('ca_control_despacho.id')
+
+        ->first();
+
+        if (is_null($contenido))
+        {
+            $data=0;
+        } else { $data=$contenido->total;  }
+
+       
+        $descuento = ControlDespacho::select('descuento')->where('id',$id)->where('sucursal_id', session('sucursal'))->where('empresa_id',session('id_empresa'))->first();
+
+        if (($descuento) && $descuento->descuento > 0 ){
+            $datadescuento = ($data * $descuento->descuento) / 100;
+        }
+        
+        return $datadescuento;
     }
 
 

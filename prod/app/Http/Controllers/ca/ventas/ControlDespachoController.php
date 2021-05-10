@@ -16,7 +16,7 @@ use App\Modelos\ca\ventas\ControlDespachoDetalle;
 
 use App\Modelos\ca\ventas\ControlDespachoEstados;
 
-use App\Modelos\ca\ventas\parametros\CA_EstadoPago;
+use App\Modelos\ca\ventas\ControlDespachoEstadosPago as CA_EstadoPago;
 
 use App\Modelos\ca\CA_Log;
 
@@ -106,7 +106,7 @@ class ControlDespachoController extends Controller
 
         ->where('ca_control_despacho.estado','<>', ConstCliente::CONTROL_DESPACHO_ELIMINADO)
 
-        ->where('ca_clientes.estado',1) 
+       // ->where('ca_clientes.estado',1) 
 
         ->groupBy('ca_control_despacho.id',
 
@@ -124,11 +124,12 @@ class ControlDespachoController extends Controller
 
         ->get();
 
+       // dd($contenido);
 
         $datos=[];
         foreach ($contenido as $item)
         {
-            $estadoPago = CA_EstadoPago::obtenerEstado($item->id);
+            //$estadoPago = CA_EstadoPago::obtenerEstado($item->id);
             $cantidad = ControlDespachoDetalle::obtenerCantidad($item->id) ;
             $total = ControlDespachoDetalle::obtenerValorTotal($item->id);
 
@@ -147,7 +148,7 @@ class ControlDespachoController extends Controller
 
             'nombre_estado' => $item->nombre_estado,
 
-            'estadoPago' => $estadoPago,
+            'estadoPago' => $item->estadoPago,
 
             'total' => '',
 
@@ -192,7 +193,7 @@ class ControlDespachoController extends Controller
 
         ->join('ca_control_despacho_estados', 'ca_control_despacho_estados.id', '=', 'ca_control_despacho.estado_id')
 
-        ->leftjoin('ca_control_despacho_estados_pago','ca_control_despacho_estados_pago.id','ca_control_despacho.estado_pago_id')
+        ->join('ca_control_despacho_estados_pago','ca_control_despacho_estados_pago.id','ca_control_despacho.estado_pago_id')
 
         ->leftJoin('ca_control_despacho_detalle','ca_control_despacho.id','ca_control_despacho_detalle.cotizacion_id')
 
@@ -203,6 +204,8 @@ class ControlDespachoController extends Controller
                     'ca_control_despacho.estado as estado',
 
                     'ca_control_despacho.estado_id as estadoDesp',
+
+                    'ca_control_despacho.descuento as descuento',
 
                     'ca_clientes.Nombre as nombre_cliente',
 
@@ -232,6 +235,8 @@ class ControlDespachoController extends Controller
 
                     'ca_clientes.Nombre',
 
+                    'ca_control_despacho.descuento',
+
                     'ca_control_despacho.valor_despacho',
 
                     'ca_control_despacho_estados.nombre')
@@ -245,9 +250,14 @@ class ControlDespachoController extends Controller
         $datos=[];
         foreach ($contenido as $item)
         {
-            $estadoPago = CA_EstadoPago::obtenerEstado($item->id);
+           // $estadoPago = CA_EstadoPago::obtenerEstado($item->id);
             $cantidad = ControlDespachoDetalle::obtenerCantidad($item->id) ;
             $total = ControlDespachoDetalle::obtenerValorTotal($item->id);
+            $datadescuento=0;
+            if ( $item->descuento > 0){
+                $datadescuento = ($total * $item->descuento) / 100;
+            }
+
 
             $datosNuevos=[
             'id' => $item->id,
@@ -260,11 +270,13 @@ class ControlDespachoController extends Controller
 
             'nombre_cliente' => $item->nombre_cliente,
 
+            'descuento' => $datadescuento,
+
             'valor_despacho' => $item->valor_despacho,
 
             'nombre_estado' => $item->nombre_estado,
 
-            'estadoPago' => $estadoPago,
+            'estadoPago' => $item->estadoPago,
 
             'total' => $total,
 
@@ -412,6 +424,7 @@ class ControlDespachoController extends Controller
 
         }
 
+        $descuento = CA_Clientes::select('descuento')->where('id',$request->cliente)->first();
 
 
         $ca_venta_cot = new ControlDespacho;
@@ -437,6 +450,8 @@ class ControlDespachoController extends Controller
         $ca_venta_cot->es_venta = $request->es_venta;
 
         $ca_venta_cot->sucursal_id = session('sucursal');
+
+        $ca_venta_cot->descuento = $descuento->descuento;
 
         $ca_venta_cot->save();
 
@@ -500,22 +515,30 @@ class ControlDespachoController extends Controller
 
             ->where('ca_control_despacho_detalle.empresa_id',session('id_empresa'))
 
-            ->where('ca_control_despacho_detalle.sucursal_id',session('sucursal'))
+            ->where('ca_control_despacho_detalle.sucursal_id',session('sucursal')) 
 
             ->get();
 
 
 
         $subtotal=0;
-
+        $subtotalMonto=0;
         foreach ($contenido as $items)
 
         {
 
-            $subtotal += ($items->precio * $items->cantidad);
+            $subtotalMonto += ($items->precio * $items->cantidad);
 
         }
+        
+        if ($ca_venta_cot->descuento > 0){
+            $descuento = ($subtotalMonto * $ca_venta_cot->descuento) / 100;
+        } else { 
+            
+            $descuento = 0;
+        }
 
+        $subtotal = $subtotalMonto; 
      
 
         $fecha= date('d-m-Y');
@@ -524,7 +547,7 @@ class ControlDespachoController extends Controller
 
         $action="listado";
 
-        return view('cliente/ventas/controlDespacho/vista_previa', compact('action','info_empresa','id','ca_cliente','fecha','contenido','subtotal','ca_venta_cot'));
+        return view('cliente/ventas/controlDespacho/vista_previa', compact('action','info_empresa','id','ca_cliente','fecha','contenido','subtotal','ca_venta_cot','descuento'));
 
     }
 
@@ -866,15 +889,24 @@ class ControlDespachoController extends Controller
 
 
 
-        $subtotal=0;
-
-        foreach ($contenido as $items)
-
-        {
-
-            $subtotal += ($items->precio * $items->cantidad);
-
-        }
+            $subtotal=0;
+            $subtotalMonto=0;
+            foreach ($contenido as $items)
+    
+            {
+    
+                $subtotalMonto += ($items->precio * $items->cantidad);
+    
+            }
+            
+            if ($ca_venta_cot->descuento > 0){
+                $descuento = ($subtotalMonto * $ca_venta_cot->descuento) / 100;
+            } else { 
+                
+                $descuento = 0;
+            }
+    
+            $subtotal = $subtotalMonto; 
 
      
 
@@ -896,6 +928,8 @@ class ControlDespachoController extends Controller
 
             'subtotal' => $subtotal,
 
+            'descuento' => $descuento,
+
             'ca_venta_cot' => $ca_venta_cot
 
         ];
@@ -904,7 +938,7 @@ class ControlDespachoController extends Controller
 
         $nombreArchivo ="Control De Despacho N° ".$id.".pdf";
 
-        $pdf = PDF::loadView('cliente/ventas/controlDespacho/guiaSalida', $data); 
+        $pdf = PDF::loadView('cliente/ventas/controlDespacho/guiaSalida', $data);  
 
         //$pdf->save($path . '/' . $nombreArchivo);
 
@@ -1188,6 +1222,20 @@ class ControlDespachoController extends Controller
 
     }
 
+
+    
+
+    public function descuento($id)
+    {
+
+        $descuento=CA_Clientes::select('descuento')->where('id',$id)->where('sucursal_id', session('sucursal'))->where('empresa_id', session('id_empresa'))->first();
+
+        if (is_null($descuento)){
+            $descuento=0;
+        }
+
+        return response()->json($descuento); 
+    }
 
 
 }
