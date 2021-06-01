@@ -213,7 +213,7 @@ class DashboardController extends Controller
 
               {
 
-                  $sucursal = $sucursales[0]->id;
+                  $sucursal = $sucursales[1]->id;
 
               } else {
 
