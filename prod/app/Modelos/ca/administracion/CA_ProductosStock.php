@@ -42,9 +42,6 @@ class CA_ProductosStock extends Model
 
     {
 
-        
-       // $id_producto=56;
-        
 
         $mas = DB::table('ca_productos_stock')
 
@@ -90,11 +87,28 @@ class CA_ProductosStock extends Model
 
         ->sum('ca_productos_stock.cantidad');
 
-    //dd($menos);
 
-        $data = $mas - $menos;
+        $menosStock = DB::table('ca_productos_stock')
 
+        ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
 
+        ->where('ca_productos_stock.producto_id', $id_producto)
+
+        ->where('ca_productos_stock.empresa_id',session('id_empresa'))
+
+        ->where('ca_productos.empresa_id',session('id_empresa'))
+
+        ->where('ca_productos.sucursal_id',session('sucursal'))
+
+        ->where('ca_productos_stock.tipo',ConstCliente::STOCK_DESCONTAR)
+
+        ->where('ca_productos_stock.id_despacho_detalle',0)
+
+        ->where('ca_productos_stock.estado',1)
+
+        ->sum('ca_productos_stock.cantidad');
+
+        $data = $mas - $menos - $menosStock;
 
         return $data;
 
@@ -259,9 +273,28 @@ class CA_ProductosStock extends Model
 
         ->sum('ca_productos_stock.cantidad');
 
+
+        $menosStock = DB::table('ca_productos_stock')
+
+        ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
+
+        ->where('ca_productos_stock.empresa_id',session('id_empresa'))
+
+        ->where('ca_productos.empresa_id',session('id_empresa'))
+
+        ->where('ca_productos.sucursal_id',session('sucursal'))
+
+        ->where('ca_productos_stock.tipo',ConstCliente::STOCK_DESCONTAR)
+
+        ->where('ca_productos_stock.id_despacho_detalle',0)
+
+        ->where('ca_productos_stock.estado',1)
+
+        ->sum('ca_productos_stock.cantidad');
+
       
 
-        $data = $mas - $menos;
+        $data = $mas - $menos - $menosStock;
 
 
         return $data;
@@ -322,9 +355,31 @@ class CA_ProductosStock extends Model
 
          ->sum('ca_productos_stock.cantidad');
 
+
+
+         $menosStock = DB::table('ca_productos_stock')
+
+         ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
+ 
+         ->where('ca_productos_stock.producto_id', $id_producto)
+ 
+         ->where('ca_productos_stock.empresa_id',session('id_empresa'))
+ 
+         ->where('ca_productos.empresa_id',session('id_empresa'))
+ 
+         ->where('ca_productos.sucursal_id',session('sucursal'))
+ 
+         ->where('ca_productos_stock.tipo',ConstCliente::STOCK_DESCONTAR)
+ 
+         ->where('ca_productos_stock.id_despacho_detalle',0)
+ 
+         ->where('ca_productos_stock.estado',1)
+ 
+         ->sum('ca_productos_stock.cantidad');
+
      
 
-         $data = $mas - $menos;
+         $data = $mas - $menos - $menosStock;
 
          $precio = productos::where('id',$id_producto)->where('estado',1)->select('precio_unitario')->first();
 
@@ -396,9 +451,31 @@ class CA_ProductosStock extends Model
 
         ->sum('ca_productos_stock.cantidad');
 
+
+
+        $menosStock = DB::table('ca_productos_stock')
+
+         ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
+ 
+         ->where('ca_productos.id', $id_producto)
+ 
+         ->where('ca_productos_stock.empresa_id',session('id_empresa'))
+ 
+         ->where('ca_productos.empresa_id',session('id_empresa'))
+ 
+         ->where('ca_productos.sucursal_id',session('sucursal'))
+ 
+         ->where('ca_productos_stock.tipo',ConstCliente::STOCK_DESCONTAR)
+ 
+         ->where('ca_productos_stock.id_despacho_detalle',0)
+ 
+         ->where('ca_productos_stock.estado',1)
+ 
+         ->sum('ca_productos_stock.cantidad');
+
     
 
-        $data = $mas - $menos;
+        $data = $mas - $menos - $menosStock;
 
 
 
@@ -486,9 +563,30 @@ class CA_ProductosStock extends Model
 
             ->sum('ca_productos_stock.cantidad');
 
+
+                $menosStock = DB::table('ca_productos_stock')
+
+            ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
+    
+            ->where('ca_productos.id', $items->id)
+    
+            ->where('ca_productos_stock.empresa_id',session('id_empresa'))
+    
+            ->where('ca_productos.empresa_id',session('id_empresa'))
+    
+            ->where('ca_productos.sucursal_id',session('sucursal'))
+    
+            ->where('ca_productos_stock.tipo',ConstCliente::STOCK_DESCONTAR)
+    
+            ->where('ca_productos_stock.id_despacho_detalle',0)
+    
+            ->where('ca_productos_stock.estado',1)
+    
+            ->sum('ca_productos_stock.cantidad');
+
         
 
-            $data = $mas - $menos;
+            $data = $mas - $menos -  $menosStock;
 
 
             if ($data > 0){
@@ -572,9 +670,31 @@ class CA_ProductosStock extends Model
 
             ->sum('ca_productos_stock.cantidad');
 
+
+
+            $menosStock = DB::table('ca_productos_stock')
+
+            ->join('ca_productos','ca_productos.id','ca_productos_stock.producto_id')
+    
+            ->where('ca_productos.id', $items->id)
+    
+            ->where('ca_productos_stock.empresa_id',session('id_empresa'))
+    
+            ->where('ca_productos.empresa_id',session('id_empresa'))
+    
+            ->where('ca_productos.sucursal_id',session('sucursal'))
+    
+            ->where('ca_productos_stock.tipo',ConstCliente::STOCK_DESCONTAR)
+    
+            ->where('ca_productos_stock.id_despacho_detalle',0)
+    
+            ->where('ca_productos_stock.estado',1)
+    
+            ->sum('ca_productos_stock.cantidad');
+
         
 
-            $data = $mas - $menos;
+            $data = $mas - $menos - $menosStock;
 
            
             if ($data>0){
